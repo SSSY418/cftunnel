@@ -1,5 +1,7 @@
 # Cloudflare 一键隧道
 
+**中文** ｜ [English](README.en.md)
+
 把本机任意 HTTP 端口几秒钟暴露到公网，**不需要 Cloudflare 账号、不需要域名、不需要配置**。
 
 ## 怎么用（三步）
@@ -50,7 +52,17 @@ cf-tunnel.cmd 8080 -Protocol quic       :: 换传输协议
 **想固定地址 / 加访问控制**
 那就需要 Cloudflare 账号 + 自己的域名，本工具不覆盖这个场景。
 
+## 环境要求
+
+- Windows 10 / 11
+- Windows PowerShell 5.1 或 PowerShell 7（系统自带 5.1 即可）
+- 能访问公网；网络环境出不去 7844（TCP）或 UDP 时需自备代理
+
 ## 文件
 
 - `cf-tunnel.cmd` — 双击入口（转发给 PowerShell，无需改执行策略）
 - `cf-tunnel.ps1` — 实际逻辑，兼容 Windows PowerShell 5.1 与 PowerShell 7
+
+## 许可
+
+MIT
