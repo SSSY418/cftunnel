@@ -2,13 +2,13 @@
 
 [English](README.md) ｜ **中文**
 
-**中文版：** `cf-tunnel-zh.cmd` ｜ **English build:** `cf-tunnel-en.cmd`
+**中文版：** `zh/cf-tunnel-zh.cmd` ｜ **English build:** `en/cf-tunnel-en.cmd`
 
 把本机任意 HTTP 端口几秒钟暴露到公网，**不需要 Cloudflare 账号、不需要域名、不需要配置**。
 
 ## 怎么用（三步）
 
-1. 双击 `cf-tunnel-zh.cmd`（中文版）——英文版是 `cf-tunnel-en.cmd`
+1. 打开 `zh` 文件夹，双击 `cf-tunnel-zh.cmd`（英文版在 `en/cf-tunnel-en.cmd`）
 2. 输入本地端口（直接回车 = 8080）
 3. 等 2~10 秒，屏幕上出现 `https://xxxx.trycloudflare.com` 就是你的公网地址（已自动复制到剪贴板）
 
@@ -17,6 +17,7 @@
 ## 命令行用法
 
 ```bat
+cd zh
 cf-tunnel-zh.cmd                 :: 双击式交互，按提示输端口
 cf-tunnel-zh.cmd 8080            :: 映射 http://localhost:8080
 cf-tunnel-zh.cmd 3000            :: 映射 http://localhost:3000
@@ -62,12 +63,12 @@ cf-tunnel-zh.cmd 8080 -Protocol quic       :: 换传输协议
 
 ## 文件
 
-两个版本，行为完全一样，只有控制台语言不同：
+两个版本，行为完全一样，只有控制台语言不同。各自独立放一个文件夹，整个文件夹拷到哪都能用：
 
-| 版本 | 入口 | 逻辑 |
-| --- | --- | --- |
-| 中文 | `cf-tunnel-zh.cmd` | `cf-tunnel-zh.ps1` |
-| English | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
+| 版本 | 文件夹 | 入口 | 逻辑 |
+| --- | --- | --- | --- |
+| 中文 | `zh/` | `cf-tunnel-zh.cmd` | `cf-tunnel-zh.ps1` |
+| English | `en/` | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
 
 `.cmd` 是双击入口（转发给 PowerShell，所以不用改执行策略）。两个 `.ps1` 都兼容 Windows PowerShell 5.1 与 PowerShell 7。
 

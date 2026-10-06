@@ -2,13 +2,13 @@
 
 **English** ｜ [中文](README.zh-CN.md)
 
-**English build:** `cf-tunnel-en.cmd` ｜ **中文版:** `cf-tunnel-zh.cmd`
+**English build:** `en/cf-tunnel-en.cmd` ｜ **中文版:** `zh/cf-tunnel-zh.cmd`
 
 Expose any local HTTP port to the public internet in seconds — **no Cloudflare account, no domain, no configuration required**.
 
 ## Usage (three steps)
 
-1. Double-click `cf-tunnel-en.cmd` (English build) — or `cf-tunnel-zh.cmd` for the Chinese build
+1. Open the `en` folder and double-click `cf-tunnel-en.cmd` (the Chinese build is `zh/cf-tunnel-zh.cmd`)
 2. Type your local port (press Enter for the default `8080`)
 3. Wait 2–10 seconds. When `https://xxxx.trycloudflare.com` appears, that is your public URL (already copied to the clipboard)
 
@@ -17,6 +17,7 @@ To stop the tunnel, press `Ctrl + C` in the window.
 ## Command line
 
 ```bat
+cd en
 cf-tunnel-en.cmd                 :: interactive mode, prompts for a port
 cf-tunnel-en.cmd 8080            :: tunnel http://localhost:8080
 cf-tunnel-en.cmd 3000            :: tunnel http://localhost:3000
@@ -62,12 +63,12 @@ That requires a Cloudflare account and your own domain. This tool does not cover
 
 ## Files
 
-Two builds, identical in behaviour — only the console language differs:
+Two builds, identical in behaviour — only the console language differs. Each build lives in its own folder and is self-contained, so you can copy a single folder anywhere and double-click the `.cmd` inside it:
 
-| Build | Entry point | Logic |
-| --- | --- | --- |
-| English | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
-| 中文 | `cf-tunnel-zh.cmd` | `cf-tunnel-zh.ps1` |
+| Build | Folder | Entry point | Logic |
+| --- | --- | --- | --- |
+| English | `en/` | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
+| 中文 | `zh/` | `cf-tunnel-zh.cmd` | `cf-tunnel-zh.ps1` |
 
 The `.cmd` file is the double-click entry point (it forwards to PowerShell, so you never have to change the execution policy). Both `.ps1` files run on Windows PowerShell 5.1 and PowerShell 7.
 
