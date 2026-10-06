@@ -93,6 +93,8 @@ certutil -hashfile "%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe" SHA256
 
 `.cmd` 是双击入口（转发给 PowerShell，所以不用改执行策略）。两个 `.ps1` 都兼容 Windows PowerShell 5.1 与 PowerShell 7。
 
+两个版本的代码完全一样，区别只在注释和提示语：中文版的注释也是中文，方便对着读；英文版注释是英文。
+
 ## 许可
 
 MIT

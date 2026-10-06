@@ -1,22 +1,20 @@
 ﻿<#
-  Cloudflare One-Click Tunnel (Quick Tunnel) - Chinese build
+  Cloudflare 一键隧道（快速隧道） - 中文版
   ------------------------------------------------------------
-  No login, no domain, no configuration: expose a local HTTP port to
-  the public internet in seconds, with a temporary
-  https://xxxx.trycloudflare.com address.
+  不用登录、不用域名、不用配置：几秒钟把本机的一个 HTTP 端口暴露到
+  公网，得到一个临时的 https://xxxx.trycloudflare.com 地址。
 
-  This is the Chinese build (folder zh/). The English build is en/cf-tunnel-en.ps1.
+  这是中文版（zh/ 文件夹）。英文版在 en/cf-tunnel-en.ps1。
 
-  Security: a Quick Tunnel is public. Anyone who has the URL can reach your local
-  service, and there is no login in front of it. See the security notes in
-  README.zh-CN.md before exposing anything sensitive.
+  安全提醒：快速隧道是公开的。任何人拿到这个地址就能访问你本机的服务，
+  前面没有任何登录验证。暴露敏感服务之前，先看 README.zh-CN.md 里的安全提醒。
 
-  Usage:
-    cf-tunnel-zh.cmd                 # double-click, then enter a port
-    cf-tunnel-zh.cmd 8080            # tunnel http://localhost:8080
-    cf-tunnel-zh.cmd 3000            # tunnel http://localhost:3000
-    cf-tunnel-zh.cmd 0 http://127.0.0.1:5000   # fully custom URL (0 = ignore the port)
-    cf-tunnel-zh.cmd 8080 -Protocol quic       # switch protocol (default http2, more firewall-friendly)
+  用法：
+    cf-tunnel-zh.cmd                 # 双击运行，按提示输端口
+    cf-tunnel-zh.cmd 8080            # 映射 http://localhost:8080
+    cf-tunnel-zh.cmd 3000            # 映射 http://localhost:3000
+    cf-tunnel-zh.cmd 0 http://127.0.0.1:5000   # 自定义完整地址（填 0 = 忽略端口）
+    cf-tunnel-zh.cmd 8080 -Protocol quic       # 换协议（默认 http2，对防火墙更友好）
 #>
 [CmdletBinding()]
 param(
@@ -25,10 +23,13 @@ param(
     [ValidateSet('http2', 'quic', 'auto')][string]$Protocol = 'http2'
 )
 
+# 出错也不中断，让脚本自己处理；下载进度条会拖慢速度，关掉
 $ErrorActionPreference = 'Continue'
 $ProgressPreference    = 'SilentlyContinue'
+# 设置窗口标题（失败也没关系，某些环境下不允许改）
 try { $Host.UI.RawUI.WindowTitle = 'Cloudflare 一键隧道' } catch { }
 
+# 几个输出小工具：统一前缀和颜色，正文用它们打印
 function Write-Line($text, $color = 'Gray') { Write-Host $text -ForegroundColor $color }
 
 function Write-Banner {
@@ -44,7 +45,8 @@ function Write-Ok($text)   { Write-Host "[v] $text" -ForegroundColor Green }
 function Write-Warn($text) { Write-Host "[!] $text" -ForegroundColor Yellow }
 function Write-Err($text)  { Write-Host "[x] $text" -ForegroundColor Red }
 
-# ---------------------------------------------------------------- target address
+# ---------------------------------------------------------------- 确定要暴露的目标地址
+# 优先用命令行传进来的地址；没有就交互式问用户，把回答整理成完整 URL 返回
 function Resolve-Target {
     if ($Url) { return $Url }
 
@@ -53,13 +55,16 @@ function Resolve-Target {
         Write-Host '  也可以直接粘贴完整地址，如 http://localhost:3000' -ForegroundColor DarkGray
         $answer = Read-Host '  端口'
         if ([string]::IsNullOrWhiteSpace($answer)) {
+            # 直接回车 → 用默认 8080
             $Url = 'http://localhost:8080'
         }
         elseif ($answer -match '^\d+$') {
+            # 纯数字 → 当成端口号
             $Port = [int]$answer
             $Url  = "http://localhost:$Port"
         }
         else {
+            # 其它内容 → 当完整地址用
             $Url = $answer.Trim()
         }
     }
@@ -67,11 +72,13 @@ function Resolve-Target {
         $Url = "http://localhost:$Port"
     }
 
+    # 忘了写 http:// 的话补上，否则不是合法地址
     if ($Url -notmatch '^[a-zA-Z]+://') { $Url = "http://$Url" }
     return $Url
 }
 
-# ---------------------------------------------------------------- cloudflared
+# ---------------------------------------------------------------- 找到或下载 cloudflared
+# 顺序：PATH 里已有 → 之前装过 → 从镜像下载 → winget 兜底
 function Resolve-Cloudflared {
     foreach ($name in @('cloudflared.exe', 'cloudflared')) {
         $cmd = Get-Command $name -ErrorAction SilentlyContinue
@@ -85,6 +92,7 @@ function Resolve-Cloudflared {
     Write-Step '首次运行，正在下载 cloudflared（约 55 MB，仅一次）...'
     New-Item -ItemType Directory -Force -Path $dir | Out-Null
 
+    # 按 CPU 架构选对应的包（绝大多数电脑是 amd64）
     $arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'amd64' }
     $file = "cloudflared-windows-$arch.exe"
     $sources = @(
@@ -95,13 +103,13 @@ function Resolve-Cloudflared {
         "https://github.moeyy.xyz/https://github.com/cloudflare/cloudflared/releases/latest/download/$file"
     )
 
-    # GitHub is often blocked on direct connections inside mainland China, so
-    # probe which mirror works first, then download from the fastest one.
+    # 国内直连 GitHub 经常不通，所以先探测哪个镜像可用，再从最快的那个下载
     Write-Host '      正在探测可用下载源...' -ForegroundColor DarkGray
     $probe = @()
     foreach ($src in $sources) {
         $t0 = Get-Date
         try {
+            # 只发一个 HEAD 请求，量一下响应时间就够了
             $null = Invoke-WebRequest -Uri $src -Method Head -UseBasicParsing -TimeoutSec 6
             $probe += [pscustomobject]@{ Url = $src; Ms = [int]((Get-Date) - $t0).TotalMilliseconds }
         }
@@ -109,6 +117,7 @@ function Resolve-Cloudflared {
     }
 
     if ($probe.Count -gt 0) {
+        # 按耗时从短到长排序，并把结果打印出来
         $ordered = @($probe | Sort-Object Ms | ForEach-Object { $_.Url })
         foreach ($p in ($probe | Sort-Object Ms)) {
             Write-Host ("      可用源 {0,6} ms : {1}" -f $p.Ms, ($p.Url -replace 'https://github.com/cloudflare/cloudflared/releases/latest/download/', '<gh>/')) -ForegroundColor DarkGray
@@ -119,6 +128,7 @@ function Resolve-Cloudflared {
         $ordered = $sources
     }
 
+    # 有 curl 就用 curl（有进度、更稳），没有就用 PowerShell 自己下
     $hasCurl = [bool](Get-Command curl.exe -ErrorAction SilentlyContinue)
 
     foreach ($src in $ordered) {
@@ -132,6 +142,7 @@ function Resolve-Cloudflared {
                 Invoke-WebRequest -Uri $src -OutFile $exe -UseBasicParsing -TimeoutSec 600
             }
 
+            # 两道校验：文件够不够大、能不能跑出版本号
             if (-not (Test-Path $exe) -or (Get-Item $exe).Length -lt 5MB) {
                 throw '文件大小异常，可能下载不完整'
             }
@@ -149,6 +160,7 @@ function Resolve-Cloudflared {
         }
     }
 
+    # 所有镜像都不行时，试试系统的包管理器
     if (Get-Command winget -ErrorAction SilentlyContinue) {
         Write-Warn '改用 winget 安装 cloudflared ...'
         try {
@@ -164,15 +176,18 @@ function Resolve-Cloudflared {
     return $null
 }
 
-# ---------------------------------------------------------------- port probe
+# ---------------------------------------------------------------- 探测本地端口有没有服务
+# 返回 $true 有服务 / $false 没有 / $null 地址解析不了
 function Test-TargetAlive([string]$target) {
     try {
+        # 从地址里拆出主机名和端口
         $uri  = [System.Uri]$target
         $host_ = if ($uri.Host) { $uri.Host } else { 'localhost' }
         $port_ = if ($uri.Port -gt 0) { $uri.Port } else { 80 }
     }
     catch { return $null }
 
+    # 连一下试试，最多等 1.5 秒，连上就算有服务
     $client = New-Object System.Net.Sockets.TcpClient
     try {
         $async = $client.BeginConnect($host_, $port_, $null, $null)
@@ -183,7 +198,7 @@ function Test-TargetAlive([string]$target) {
     finally { $client.Close() }
 }
 
-# ---------------------------------------------------------------- main flow
+# ---------------------------------------------------------------- 主流程
 Write-Banner
 
 $target = Resolve-Target
@@ -198,6 +213,7 @@ if (-not $exe) {
     exit 1
 }
 
+# 端口没人监听也照样能建隧道，只是打开网址会 502，所以提前提醒一句
 $alive = Test-TargetAlive $target
 if ($alive -eq $false) {
     Write-Warn '该本地端口当前没有服务在监听 —— 隧道仍会建立，但打开网址会显示 502。'
@@ -212,12 +228,14 @@ Write-Host ''
 Write-Step '正在建立隧道，请稍候（通常 2~10 秒）...'
 Write-Host ''
 
-$script:publicUrl = $null
-$script:failedHint = $false
+$script:publicUrl = $null   # 抓到的公网地址
+$script:failedHint = $false # 有没有出现连接失败的日志
 
+# 启动 cloudflared，把它输出的每一行接过来边读边处理
 & $exe tunnel --no-autoupdate --protocol $Protocol --url $target 2>&1 | ForEach-Object {
     $line = $_.ToString()
 
+    # 第一次看到 trycloudflare.com 的地址就是公网地址：高亮出来 + 复制到剪贴板
     if (-not $script:publicUrl -and $line -match 'https://[a-zA-Z0-9][a-zA-Z0-9\-]*\.trycloudflare\.com') {
         $script:publicUrl = $Matches[0]
 
@@ -237,10 +255,12 @@ $script:failedHint = $false
         try { Set-Clipboard -Value $script:publicUrl } catch { }
     }
 
+    # 记一下有没有连不上边缘节点的报错，最后好给对应的建议
     if ($line -match 'failed to (dial|request)|no such host|context deadline exceeded|Unable to establish connection|failed to connect to edge') {
         $script:failedHint = $true
     }
 
+    # 把 cloudflared 的原始日志转成暗色打印，空行就不打了
     if ($line.Trim()) { Write-Host "  $line" -ForegroundColor DarkGray }
 }
 
