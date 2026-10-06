@@ -1,68 +1,68 @@
-# Cloudflare 一键隧道
+# Cloudflare One-Click Tunnel
 
-**中文** ｜ [English](README.en.md)
+**English** ｜ [中文](README.zh-CN.md)
 
-把本机任意 HTTP 端口几秒钟暴露到公网，**不需要 Cloudflare 账号、不需要域名、不需要配置**。
+Expose any local HTTP port to the public internet in seconds — **no Cloudflare account, no domain, no configuration required**.
 
-## 怎么用（三步）
+## Usage (three steps)
 
-1. 双击 `cf-tunnel.cmd`
-2. 输入本地端口（直接回车 = 8080）
-3. 等 2~10 秒，屏幕上出现 `https://xxxx.trycloudflare.com` 就是你的公网地址（已自动复制到剪贴板）
+1. Double-click `cf-tunnel.cmd`
+2. Type your local port (press Enter for the default `8080`)
+3. Wait 2–10 seconds. When `https://xxxx.trycloudflare.com` appears, that is your public URL (already copied to the clipboard)
 
-关闭：在窗口里按 `Ctrl + C`。
+To stop the tunnel, press `Ctrl + C` in the window.
 
-## 命令行用法
+## Command line
 
 ```bat
-cf-tunnel.cmd                 :: 双击式交互，按提示输端口
-cf-tunnel.cmd 8080            :: 映射 http://localhost:8080
-cf-tunnel.cmd 3000            :: 映射 http://localhost:3000
-cf-tunnel.cmd 0 http://127.0.0.1:5000   :: 自定义完整地址（第一个参数填 0）
-cf-tunnel.cmd 8080 -Protocol quic       :: 换传输协议
+cf-tunnel.cmd                 :: interactive mode, prompts for a port
+cf-tunnel.cmd 8080            :: tunnel http://localhost:8080
+cf-tunnel.cmd 3000            :: tunnel http://localhost:3000
+cf-tunnel.cmd 0 http://127.0.0.1:5000   :: custom full URL (pass 0 as the first argument)
+cf-tunnel.cmd 8080 -Protocol quic       :: switch transport protocol
 ```
 
-参数说明：
+Arguments:
 
-| 参数 | 说明 |
+| Argument | Description |
 | --- | --- |
-| `Port`（第 1 个） | 本地端口，回车默认 8080；填 `0` 表示忽略、改用完整 URL |
-| `Url`（第 2 个） | 完整本地地址，如 `http://localhost:3000` |
-| `-Protocol` | `http2`（默认，走 TCP 7844，对防火墙更友好）/ `quic`（走 UDP，通常更快）/ `auto` |
+| `Port` (1st) | Local port; Enter defaults to 8080; pass `0` to ignore it and use a full URL instead |
+| `Url` (2nd) | Full local address, e.g. `http://localhost:3000` |
+| `-Protocol` | `http2` (default, TCP 7844, more firewall-friendly) / `quic` (UDP, usually faster) / `auto` |
 
-## 它自动做了什么
+## What it does for you
 
-- 找不到 `cloudflared` 时自动安装：先探测可用镜像（`gh-proxy.com` / `ghproxy.net` / GitHub 官方 / `ghfast.top` / `github.moeyy.xyz`），按响应速度排序下载，最后兜底用 `winget`；安装到 `%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe`，**只下一次**。
-- 检测端口是否真的有服务在监听，没有会提前提醒（否则打开网址只会看到 502）。
-- 启动隧道、从日志里抓出公网地址、高亮显示并写入剪贴板。
-- 隧道失败时提示换协议重试。
+- Installs `cloudflared` automatically when missing: it probes several mirrors (`gh-proxy.com` / `ghproxy.net` / GitHub official / `ghfast.top` / `github.moeyy.xyz`), downloads from the fastest one, and falls back to `winget`. It installs to `%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe` and **only downloads once**.
+- Checks whether something is actually listening on the port, and warns you early (otherwise you would just see a 502 in the browser).
+- Starts the tunnel, extracts the public URL from the logs, highlights it, and copies it to the clipboard.
+- Suggests retrying with another protocol when the tunnel fails.
 
-## 常见问题
+## FAQ
 
-**打开网址显示 502 / Bad Gateway**
-本地服务没起来或端口填错了。先确认浏览器访问 `http://localhost:端口` 正常。
+**The URL shows 502 / Bad Gateway**
+Your local service is not running, or the port is wrong. First confirm `http://localhost:<port>` works in a browser.
 
-**提示 `failed to dial to edge` / 连不上边缘节点**
-网络出不去 7844 端口。换协议再试：`cf-tunnel.cmd 8080 -Protocol quic`（或反过来用 `-Protocol http2`），必要时挂代理。
+**`failed to dial to edge` / cannot reach Cloudflare edge**
+Your network is blocking port 7844. Retry with another protocol: `cf-tunnel.cmd 8080 -Protocol quic` (or `-Protocol http2`), and use a proxy if necessary.
 
-**地址是临时的？**
-是的。Quick Tunnel 属于免费临时隧道，**每次重启都会换一个新地址**，且不保证长期可用，适合临时演示、联调、手机访问本机服务。
-需要固定域名请改用命名隧道（`cloudflared tunnel login` → `tunnel create` → `tunnel route dns`），那是另一套流程。
+**Is the URL temporary?**
+Yes. Quick Tunnels are free and temporary: **a new address is issued on every restart** and long-term availability is not guaranteed. They are a good fit for demos, integration testing, or reaching a local service from your phone.
+For a stable hostname, use a named tunnel instead (`cloudflared tunnel login` → `tunnel create` → `tunnel route dns`) — that is a different workflow.
 
-**想固定地址 / 加访问控制**
-那就需要 Cloudflare 账号 + 自己的域名，本工具不覆盖这个场景。
+**I want a fixed address / access control**
+That requires a Cloudflare account and your own domain. This tool does not cover that scenario.
 
-## 环境要求
+## Requirements
 
 - Windows 10 / 11
-- Windows PowerShell 5.1 或 PowerShell 7（系统自带 5.1 即可）
-- 能访问公网；网络环境出不去 7844（TCP）或 UDP 时需自备代理
+- Windows PowerShell 5.1 or PowerShell 7 (the built-in 5.1 is enough)
+- Internet access; if your network blocks TCP 7844 or UDP, bring your own proxy
 
-## 文件
+## Files
 
-- `cf-tunnel.cmd` — 双击入口（转发给 PowerShell，无需改执行策略）
-- `cf-tunnel.ps1` — 实际逻辑，兼容 Windows PowerShell 5.1 与 PowerShell 7
+- `cf-tunnel.cmd` — double-click entry point (forwards to PowerShell, no need to change the execution policy)
+- `cf-tunnel.ps1` — the actual logic, compatible with Windows PowerShell 5.1 and PowerShell 7
 
-## 许可
+## License
 
 MIT
