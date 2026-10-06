@@ -2,6 +2,8 @@
 
 [English](README.md) ｜ **中文**
 
+**中文版：** `cf-tunnel.cmd` ｜ **English build:** `cf-tunnel-en.cmd`
+
 把本机任意 HTTP 端口几秒钟暴露到公网，**不需要 Cloudflare 账号、不需要域名、不需要配置**。
 
 ## 怎么用（三步）

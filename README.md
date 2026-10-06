@@ -2,6 +2,8 @@
 
 **English** ｜ [中文](README.zh-CN.md)
 
+**English build:** `cf-tunnel-en.cmd` ｜ **中文版:** `cf-tunnel.cmd`
+
 Expose any local HTTP port to the public internet in seconds — **no Cloudflare account, no domain, no configuration required**.
 
 ## Usage (three steps)
