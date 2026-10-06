@@ -6,7 +6,7 @@ Expose any local HTTP port to the public internet in seconds — **no Cloudflare
 
 ## Usage (three steps)
 
-1. Double-click `cf-tunnel.cmd`
+1. Double-click `cf-tunnel-en.cmd` (English build) — or `cf-tunnel.cmd` for the Chinese build
 2. Type your local port (press Enter for the default `8080`)
 3. Wait 2–10 seconds. When `https://xxxx.trycloudflare.com` appears, that is your public URL (already copied to the clipboard)
 
@@ -15,12 +15,11 @@ To stop the tunnel, press `Ctrl + C` in the window.
 ## Command line
 
 ```bat
-cf-tunnel.cmd                 :: interactive mode, prompts for a port
-cf-tunnel.cmd 8080            :: tunnel http://localhost:8080
-cf-tunnel.cmd 3000            :: tunnel http://localhost:3000
-cf-tunnel.cmd 0 http://127.0.0.1:5000   :: custom full URL (pass 0 as the first argument)
-cf-tunnel.cmd 8080 -Protocol quic       :: switch transport protocol
-cf-tunnel.cmd 8080 -Lang en             :: force the console language
+cf-tunnel-en.cmd                 :: interactive mode, prompts for a port
+cf-tunnel-en.cmd 8080            :: tunnel http://localhost:8080
+cf-tunnel-en.cmd 3000            :: tunnel http://localhost:3000
+cf-tunnel-en.cmd 0 http://127.0.0.1:5000   :: custom full URL (pass 0 as the first argument)
+cf-tunnel-en.cmd 8080 -Protocol quic       :: switch transport protocol
 ```
 
 Arguments:
@@ -30,12 +29,10 @@ Arguments:
 | `Port` (1st) | Local port; Enter defaults to 8080; pass `0` to ignore it and use a full URL instead |
 | `Url` (2nd) | Full local address, e.g. `http://localhost:3000` |
 | `-Protocol` | `http2` (default, TCP 7844, more firewall-friendly) / `quic` (UDP, usually faster) / `auto` |
-| `-Lang` | Console language: `auto` (default — Chinese on a Chinese Windows, English anywhere else) / `zh` / `en` |
 
 ## What it does for you
 
 - Installs `cloudflared` automatically when missing: it probes several mirrors (`gh-proxy.com` / `ghproxy.net` / GitHub official / `ghfast.top` / `github.moeyy.xyz`), downloads from the fastest one, and falls back to `winget`. It installs to `%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe` and **only downloads once**.
-- Prints every message in your system language (Chinese on a Chinese Windows, English anywhere else; override with `-Lang zh` or `-Lang en`).
 - Checks whether something is actually listening on the port, and warns you early (otherwise you would just see a 502 in the browser).
 - Starts the tunnel, extracts the public URL from the logs, highlights it, and copies it to the clipboard.
 - Suggests retrying with another protocol when the tunnel fails.
@@ -63,8 +60,14 @@ That requires a Cloudflare account and your own domain. This tool does not cover
 
 ## Files
 
-- `cf-tunnel.cmd` — double-click entry point (forwards to PowerShell, no need to change the execution policy)
-- `cf-tunnel.ps1` — the actual logic, compatible with Windows PowerShell 5.1 and PowerShell 7
+Two builds, identical in behaviour — only the console language differs:
+
+| Build | Entry point | Logic |
+| --- | --- | --- |
+| English | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
+| 中文 | `cf-tunnel.cmd` | `cf-tunnel.ps1` |
+
+The `.cmd` file is the double-click entry point (it forwards to PowerShell, so you never have to change the execution policy). Both `.ps1` files run on Windows PowerShell 5.1 and PowerShell 7.
 
 ## License
 
