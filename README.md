@@ -40,6 +40,26 @@ Arguments:
 - Starts the tunnel, extracts the public URL from the logs, highlights it, and copies it to the clipboard.
 - Suggests retrying with another protocol when the tunnel fails.
 
+## Security notes
+
+**Anything you tunnel becomes public.** A Quick Tunnel exposes your local service to the entire internet, and the random URL is not a password — anyone who has it can reach your service, and there is no login in front of it.
+
+- Do not tunnel sensitive things: admin panels, databases, file shares, remote-desktop-like endpoints, or any service that has no authentication of its own. If you need access control, build it into the service (or use a named tunnel with Cloudflare Access).
+- Keep your local service bound to `127.0.0.1` (the default). If it listens on `0.0.0.0`, it is already reachable from your LAN before this tool is involved.
+- Traffic is decrypted at Cloudflare's edge and re-encrypted to your machine. Do not send data you would not hand to a third party.
+- The address is disposable: press `Ctrl + C` when you are done. The next run issues a new URL and the old one stops working.
+- Do not use it for anything that violates Cloudflare's terms or local law.
+
+**About the download mirrors.** On the first run the script downloads `cloudflared.exe`. Because GitHub is slow or blocked on some networks, it probes several GitHub mirrors (`gh-proxy.com` / `ghproxy.net` / `ghfast.top` / `github.moeyy.xyz`), downloads from the fastest one, and falls back to `winget`. Mirrors are third parties, so if you care about supply-chain risk, verify the file against Cloudflare's published checksums:
+
+```bat
+certutil -hashfile "%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe" SHA256
+```
+
+Or download `cloudflared` yourself from <https://github.com/cloudflare/cloudflared/releases> and put it on `PATH` — the script prefers an existing `cloudflared` and only downloads when it cannot find one.
+
+**Privileges.** No administrator rights are needed. The binary is installed to `%LOCALAPPDATA%\cf-tunnel\bin\`; nothing is added to `PATH`, the registry, or the system.
+
 ## FAQ
 
 **The URL shows 502 / Bad Gateway**

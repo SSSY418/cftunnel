@@ -40,6 +40,26 @@ cf-tunnel-zh.cmd 8080 -Protocol quic       :: 换传输协议
 - 启动隧道、从日志里抓出公网地址、高亮显示并写入剪贴板。
 - 隧道失败时提示换协议重试。
 
+## 安全提醒
+
+**你隧道出去的，就是公开的。** 快速隧道会把你本机的服务暴露到整个互联网，而那个随机地址**不是密码**——任何人拿到它就能访问你的服务，前面没有任何登录页。
+
+- 不要拿它暴露敏感服务：管理后台、数据库、文件共享、类远程桌面、以及任何自身没有认证的服务。需要访问控制就做在服务里（或改用命名隧道 + Cloudflare Access）。
+- 本地服务尽量只监听 `127.0.0.1`（默认就是）。如果它监听在 `0.0.0.0` 上，那在本工具还没上场之前，同局域网的人就已经能访问了。
+- 流量在 Cloudflare 边缘节点会被解密，再加密送到你机器上。不要把不愿交给第三方的数据往里塞。
+- 地址是一次性的：用完按 `Ctrl + C`。下次运行会换新地址，旧地址随即失效。
+- 不要用它做违反 Cloudflare 条款或当地法律的事。
+
+**关于下载源。** 首次运行会下载 `cloudflared.exe`。因为部分网络访问 GitHub 慢或不通，脚本会先探测几个 GitHub 镜像（`gh-proxy.com` / `ghproxy.net` / `ghfast.top` / `github.moeyy.xyz`），取最快的下载，最后兜底 `winget`。镜像属于第三方，如果你在意供应链风险，可以对照 Cloudflare 官方公布的校验值验证文件：
+
+```bat
+certutil -hashfile "%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe" SHA256
+```
+
+或者自己从 <https://github.com/cloudflare/cloudflared/releases> 下载放进 `PATH`——脚本优先用已有的 `cloudflared`，找不到才会下载。
+
+**权限。** 不需要管理员权限。程序装在 `%LOCALAPPDATA%\cf-tunnel\bin\`，不改 `PATH`、不写注册表、不碰系统目录。
+
 ## 常见问题
 
 **打开网址显示 502 / Bad Gateway**

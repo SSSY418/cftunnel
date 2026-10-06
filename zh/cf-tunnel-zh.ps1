@@ -7,6 +7,10 @@
 
   This is the Chinese build (folder zh/). The English build is en/cf-tunnel-en.ps1.
 
+  Security: a Quick Tunnel is public. Anyone who has the URL can reach your local
+  service, and there is no login in front of it. See the security notes in
+  README.zh-CN.md before exposing anything sensitive.
+
   Usage:
     cf-tunnel-zh.cmd                 # double-click, then enter a port
     cf-tunnel-zh.cmd 8080            # tunnel http://localhost:8080
@@ -226,6 +230,7 @@ $script:failedHint = $false
         Write-Host ''
         Write-Host "      $($script:publicUrl)" -ForegroundColor Yellow
         Write-Host ''
+        Write-Warn '注意：该地址在公网公开，任何人拿到都能访问你本机这个服务——别用来暴露后台或数据库'
         Write-Host '  (地址已复制到剪贴板，Ctrl+C 即可关闭隧道)' -ForegroundColor DarkGray
         Write-Host ''
 
