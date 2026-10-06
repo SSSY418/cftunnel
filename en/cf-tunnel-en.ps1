@@ -230,7 +230,7 @@ $script:failedHint = $false
         Write-Host ''
         Write-Host "      $($script:publicUrl)" -ForegroundColor Yellow
         Write-Host ''
-        Write-Warn 'Note: this URL is public - anyone who has it can reach your local service. Never expose admin panels or databases this way.'
+        Write-Warn 'Note: this URL is public - anyone who has it can reach your local service. Do not share it around, and never expose admin panels or databases this way.'
         Write-Host '  (URL copied to the clipboard; press Ctrl+C to close the tunnel)' -ForegroundColor DarkGray
         Write-Host ''
 

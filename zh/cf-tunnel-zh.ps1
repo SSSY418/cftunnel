@@ -230,7 +230,7 @@ $script:failedHint = $false
         Write-Host ''
         Write-Host "      $($script:publicUrl)" -ForegroundColor Yellow
         Write-Host ''
-        Write-Warn '注意：该地址在公网公开，任何人拿到都能访问你本机这个服务——别用来暴露后台或数据库'
+        Write-Warn '注意：该地址在公网公开，任何人拿到都能访问你本机这个服务——别外传，也别用来暴露后台或数据库'
         Write-Host '  (地址已复制到剪贴板，Ctrl+C 即可关闭隧道)' -ForegroundColor DarkGray
         Write-Host ''
 
