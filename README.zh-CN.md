@@ -2,13 +2,13 @@
 
 [English](README.md) ｜ **中文**
 
-**中文版：** `cf-tunnel.cmd` ｜ **English build:** `cf-tunnel-en.cmd`
+**中文版：** `cf-tunnel-zh.cmd` ｜ **English build:** `cf-tunnel-en.cmd`
 
 把本机任意 HTTP 端口几秒钟暴露到公网，**不需要 Cloudflare 账号、不需要域名、不需要配置**。
 
 ## 怎么用（三步）
 
-1. 双击 `cf-tunnel.cmd`（中文版）——英文版是 `cf-tunnel-en.cmd`
+1. 双击 `cf-tunnel-zh.cmd`（中文版）——英文版是 `cf-tunnel-en.cmd`
 2. 输入本地端口（直接回车 = 8080）
 3. 等 2~10 秒，屏幕上出现 `https://xxxx.trycloudflare.com` 就是你的公网地址（已自动复制到剪贴板）
 
@@ -17,11 +17,11 @@
 ## 命令行用法
 
 ```bat
-cf-tunnel.cmd                 :: 双击式交互，按提示输端口
-cf-tunnel.cmd 8080            :: 映射 http://localhost:8080
-cf-tunnel.cmd 3000            :: 映射 http://localhost:3000
-cf-tunnel.cmd 0 http://127.0.0.1:5000   :: 自定义完整地址（第一个参数填 0）
-cf-tunnel.cmd 8080 -Protocol quic       :: 换传输协议
+cf-tunnel-zh.cmd                 :: 双击式交互，按提示输端口
+cf-tunnel-zh.cmd 8080            :: 映射 http://localhost:8080
+cf-tunnel-zh.cmd 3000            :: 映射 http://localhost:3000
+cf-tunnel-zh.cmd 0 http://127.0.0.1:5000   :: 自定义完整地址（第一个参数填 0）
+cf-tunnel-zh.cmd 8080 -Protocol quic       :: 换传输协议
 ```
 
 参数说明：
@@ -45,7 +45,7 @@ cf-tunnel.cmd 8080 -Protocol quic       :: 换传输协议
 本地服务没起来或端口填错了。先确认浏览器访问 `http://localhost:端口` 正常。
 
 **提示 `failed to dial to edge` / 连不上边缘节点**
-网络出不去 7844 端口。换协议再试：`cf-tunnel.cmd 8080 -Protocol quic`（或反过来用 `-Protocol http2`），必要时挂代理。
+网络出不去 7844 端口。换协议再试：`cf-tunnel-zh.cmd 8080 -Protocol quic`（或反过来用 `-Protocol http2`），必要时挂代理。
 
 **地址是临时的？**
 是的。Quick Tunnel 属于免费临时隧道，**每次重启都会换一个新地址**，且不保证长期可用，适合临时演示、联调、手机访问本机服务。
@@ -66,7 +66,7 @@ cf-tunnel.cmd 8080 -Protocol quic       :: 换传输协议
 
 | 版本 | 入口 | 逻辑 |
 | --- | --- | --- |
-| 中文 | `cf-tunnel.cmd` | `cf-tunnel.ps1` |
+| 中文 | `cf-tunnel-zh.cmd` | `cf-tunnel-zh.ps1` |
 | English | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
 
 `.cmd` 是双击入口（转发给 PowerShell，所以不用改执行策略）。两个 `.ps1` 都兼容 Windows PowerShell 5.1 与 PowerShell 7。

@@ -2,13 +2,13 @@
 
 **English** ｜ [中文](README.zh-CN.md)
 
-**English build:** `cf-tunnel-en.cmd` ｜ **中文版:** `cf-tunnel.cmd`
+**English build:** `cf-tunnel-en.cmd` ｜ **中文版:** `cf-tunnel-zh.cmd`
 
 Expose any local HTTP port to the public internet in seconds — **no Cloudflare account, no domain, no configuration required**.
 
 ## Usage (three steps)
 
-1. Double-click `cf-tunnel-en.cmd` (English build) — or `cf-tunnel.cmd` for the Chinese build
+1. Double-click `cf-tunnel-en.cmd` (English build) — or `cf-tunnel-zh.cmd` for the Chinese build
 2. Type your local port (press Enter for the default `8080`)
 3. Wait 2–10 seconds. When `https://xxxx.trycloudflare.com` appears, that is your public URL (already copied to the clipboard)
 
@@ -45,7 +45,7 @@ Arguments:
 Your local service is not running, or the port is wrong. First confirm `http://localhost:<port>` works in a browser.
 
 **`failed to dial to edge` / cannot reach Cloudflare edge**
-Your network is blocking port 7844. Retry with another protocol: `cf-tunnel.cmd 8080 -Protocol quic` (or `-Protocol http2`), and use a proxy if necessary.
+Your network is blocking port 7844. Retry with another protocol: `cf-tunnel-en.cmd 8080 -Protocol quic` (or `-Protocol http2`), and use a proxy if necessary.
 
 **Is the URL temporary?**
 Yes. Quick Tunnels are free and temporary: **a new address is issued on every restart** and long-term availability is not guaranteed. They are a good fit for demos, integration testing, or reaching a local service from your phone.
@@ -67,7 +67,7 @@ Two builds, identical in behaviour — only the console language differs:
 | Build | Entry point | Logic |
 | --- | --- | --- |
 | English | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
-| 中文 | `cf-tunnel.cmd` | `cf-tunnel.ps1` |
+| 中文 | `cf-tunnel-zh.cmd` | `cf-tunnel-zh.ps1` |
 
 The `.cmd` file is the double-click entry point (it forwards to PowerShell, so you never have to change the execution policy). Both `.ps1` files run on Windows PowerShell 5.1 and PowerShell 7.
 

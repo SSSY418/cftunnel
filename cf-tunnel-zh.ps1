@@ -8,11 +8,11 @@
   This is the Chinese build. The English build is cf-tunnel-en.ps1.
 
   Usage:
-    cf-tunnel.cmd                 # double-click, then enter a port
-    cf-tunnel.cmd 8080            # tunnel http://localhost:8080
-    cf-tunnel.cmd 3000            # tunnel http://localhost:3000
-    cf-tunnel.cmd 0 http://127.0.0.1:5000   # fully custom URL (0 = ignore the port)
-    cf-tunnel.cmd 8080 -Protocol quic       # switch protocol (default http2, more firewall-friendly)
+    cf-tunnel-zh.cmd                 # double-click, then enter a port
+    cf-tunnel-zh.cmd 8080            # tunnel http://localhost:8080
+    cf-tunnel-zh.cmd 3000            # tunnel http://localhost:3000
+    cf-tunnel-zh.cmd 0 http://127.0.0.1:5000   # fully custom URL (0 = ignore the port)
+    cf-tunnel-zh.cmd 8080 -Protocol quic       # switch protocol (default http2, more firewall-friendly)
 #>
 [CmdletBinding()]
 param(
@@ -246,8 +246,8 @@ if ($script:publicUrl) {
 elseif ($script:failedHint) {
     Write-Err '隧道未能建立：可能是网络无法连接 Cloudflare 边缘节点。'
     Write-Host '      可以试试其它协议后再运行一次，例如：' -ForegroundColor Gray
-    Write-Host '        cf-tunnel.cmd 8080 -Protocol quic' -ForegroundColor DarkGray
-    Write-Host '        cf-tunnel.cmd 8080 -Protocol auto' -ForegroundColor DarkGray
+    Write-Host '        cf-tunnel-zh.cmd 8080 -Protocol quic' -ForegroundColor DarkGray
+    Write-Host '        cf-tunnel-zh.cmd 8080 -Protocol auto' -ForegroundColor DarkGray
     Write-Host '      若仍失败，请检查代理/防火墙是否放行 TCP 7844。' -ForegroundColor DarkGray
 }
 else {

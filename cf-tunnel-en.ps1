@@ -5,7 +5,7 @@
   the public internet in seconds, with a temporary
   https://xxxx.trycloudflare.com address.
 
-  This is the English build. The Chinese build is cf-tunnel.ps1.
+  This is the English build. The Chinese build is cf-tunnel-zh.ps1.
 
   Usage:
     cf-tunnel-en.cmd                 # double-click, then enter a port
