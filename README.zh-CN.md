@@ -20,6 +20,7 @@ cf-tunnel.cmd 8080            :: 映射 http://localhost:8080
 cf-tunnel.cmd 3000            :: 映射 http://localhost:3000
 cf-tunnel.cmd 0 http://127.0.0.1:5000   :: 自定义完整地址（第一个参数填 0）
 cf-tunnel.cmd 8080 -Protocol quic       :: 换传输协议
+cf-tunnel.cmd 8080 -Lang en             :: 强制指定控制台语言
 ```
 
 参数说明：
@@ -29,10 +30,12 @@ cf-tunnel.cmd 8080 -Protocol quic       :: 换传输协议
 | `Port`（第 1 个） | 本地端口，回车默认 8080；填 `0` 表示忽略、改用完整 URL |
 | `Url`（第 2 个） | 完整本地地址，如 `http://localhost:3000` |
 | `-Protocol` | `http2`（默认，走 TCP 7844，对防火墙更友好）/ `quic`（走 UDP，通常更快）/ `auto` |
+| `-Lang` | 控制台语言：`auto`（默认，跟随系统语言，中文 Windows 显示中文，其它显示英文）/ `zh` / `en` |
 
 ## 它自动做了什么
 
 - 找不到 `cloudflared` 时自动安装：先探测可用镜像（`gh-proxy.com` / `ghproxy.net` / GitHub 官方 / `ghfast.top` / `github.moeyy.xyz`），按响应速度排序下载，最后兜底用 `winget`；安装到 `%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe`，**只下一次**。
+- 界面语言跟随系统：中文 Windows 显示中文，其它环境显示英文（可用 `-Lang zh` / `-Lang en` 强制）。
 - 检测端口是否真的有服务在监听，没有会提前提醒（否则打开网址只会看到 502）。
 - 启动隧道、从日志里抓出公网地址、高亮显示并写入剪贴板。
 - 隧道失败时提示换协议重试。

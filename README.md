@@ -20,6 +20,7 @@ cf-tunnel.cmd 8080            :: tunnel http://localhost:8080
 cf-tunnel.cmd 3000            :: tunnel http://localhost:3000
 cf-tunnel.cmd 0 http://127.0.0.1:5000   :: custom full URL (pass 0 as the first argument)
 cf-tunnel.cmd 8080 -Protocol quic       :: switch transport protocol
+cf-tunnel.cmd 8080 -Lang en             :: force the console language
 ```
 
 Arguments:
@@ -29,10 +30,12 @@ Arguments:
 | `Port` (1st) | Local port; Enter defaults to 8080; pass `0` to ignore it and use a full URL instead |
 | `Url` (2nd) | Full local address, e.g. `http://localhost:3000` |
 | `-Protocol` | `http2` (default, TCP 7844, more firewall-friendly) / `quic` (UDP, usually faster) / `auto` |
+| `-Lang` | Console language: `auto` (default — Chinese on a Chinese Windows, English anywhere else) / `zh` / `en` |
 
 ## What it does for you
 
 - Installs `cloudflared` automatically when missing: it probes several mirrors (`gh-proxy.com` / `ghproxy.net` / GitHub official / `ghfast.top` / `github.moeyy.xyz`), downloads from the fastest one, and falls back to `winget`. It installs to `%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe` and **only downloads once**.
+- Prints every message in your system language (Chinese on a Chinese Windows, English anywhere else; override with `-Lang zh` or `-Lang en`).
 - Checks whether something is actually listening on the port, and warns you early (otherwise you would just see a 502 in the browser).
 - Starts the tunnel, extracts the public URL from the logs, highlights it, and copies it to the clipboard.
 - Suggests retrying with another protocol when the tunnel fails.
