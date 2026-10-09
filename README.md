@@ -1,98 +1,100 @@
-# Cloudflare One-Click Tunnel
+# Cloudflare 一键隧道
 
-**English** ｜ [中文](README.zh-CN.md)
+[English](README.en.md) ｜ **中文**
 
-**English build:** `en/cf-tunnel-en.cmd` ｜ **中文版:** `zh/cf-tunnel-zh.cmd`
+**中文版：** `zh/cf-tunnel-zh.cmd` ｜ **English build:** `en/cf-tunnel-en.cmd`
 
-Expose any local HTTP port to the public internet in seconds — **no Cloudflare account, no domain, no configuration required**.
+把本机任意 HTTP 端口几秒钟暴露到公网，**不需要 Cloudflare 账号、不需要域名、不需要配置**。
 
-## Usage (three steps)
+## 怎么用（三步）
 
-1. Open the `en` folder and double-click `cf-tunnel-en.cmd` (the Chinese build is `zh/cf-tunnel-zh.cmd`)
-2. Type your local port (press Enter for the default `8080`)
-3. Wait 2–10 seconds. When `https://xxxx.trycloudflare.com` appears, that is your public URL (already copied to the clipboard)
+1. 打开 `zh` 文件夹，双击 `cf-tunnel-zh.cmd`（英文版在 `en/cf-tunnel-en.cmd`）
+2. 输入本地端口（直接回车 = 8080）
+3. 等 2~10 秒，屏幕上出现 `https://xxxx.trycloudflare.com` 就是你的公网地址（已自动复制到剪贴板）
 
-To stop the tunnel, press `Ctrl + C` in the window.
+关闭：在窗口里按 `Ctrl + C`。
 
-## Command line
+## 命令行用法
 
 ```bat
-cd en
-cf-tunnel-en.cmd                 :: interactive mode, prompts for a port
-cf-tunnel-en.cmd 8080            :: tunnel http://localhost:8080
-cf-tunnel-en.cmd 3000            :: tunnel http://localhost:3000
-cf-tunnel-en.cmd 0 http://127.0.0.1:5000   :: custom full URL (pass 0 as the first argument)
-cf-tunnel-en.cmd 8080 -Protocol quic       :: switch transport protocol
+cd zh
+cf-tunnel-zh.cmd                 :: 双击式交互，按提示输端口
+cf-tunnel-zh.cmd 8080            :: 映射 http://localhost:8080
+cf-tunnel-zh.cmd 3000            :: 映射 http://localhost:3000
+cf-tunnel-zh.cmd 0 http://127.0.0.1:5000   :: 自定义完整地址（第一个参数填 0）
+cf-tunnel-zh.cmd 8080 -Protocol quic       :: 换传输协议
 ```
 
-Arguments:
+参数说明：
 
-| Argument | Description |
+| 参数 | 说明 |
 | --- | --- |
-| `Port` (1st) | Local port; Enter defaults to 8080; pass `0` to ignore it and use a full URL instead |
-| `Url` (2nd) | Full local address, e.g. `http://localhost:3000` |
-| `-Protocol` | `http2` (default, TCP 7844, more firewall-friendly) / `quic` (UDP, usually faster) / `auto` |
+| `Port`（第 1 个） | 本地端口，回车默认 8080；填 `0` 表示忽略、改用完整 URL |
+| `Url`（第 2 个） | 完整本地地址，如 `http://localhost:3000` |
+| `-Protocol` | `http2`（默认，走 TCP 7844，对防火墙更友好）/ `quic`（走 UDP，通常更快）/ `auto` |
 
-## What it does for you
+## 它自动做了什么
 
-- Installs `cloudflared` automatically when missing: it probes several mirrors (`gh-proxy.com` / `ghproxy.net` / GitHub official / `ghfast.top` / `github.moeyy.xyz`), downloads from the fastest one, and falls back to `winget`. It installs to `%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe` and **only downloads once**.
-- Checks whether something is actually listening on the port, and warns you early (otherwise you would just see a 502 in the browser).
-- Starts the tunnel, extracts the public URL from the logs, highlights it, and copies it to the clipboard.
-- Suggests retrying with another protocol when the tunnel fails.
+- 找不到 `cloudflared` 时自动安装：先探测可用镜像（`gh-proxy.com` / `ghproxy.net` / GitHub 官方 / `ghfast.top` / `github.moeyy.xyz`），按响应速度排序下载，最后兜底用 `winget`；安装到 `%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe`，**只下一次**。
+- 检测端口是否真的有服务在监听，没有会提前提醒（否则打开网址只会看到 502）。
+- 启动隧道、从日志里抓出公网地址、高亮显示并写入剪贴板。
+- 隧道失败时提示换协议重试。
 
-## Security notes
+## 安全提醒
 
-**Anything you tunnel becomes public.** A Quick Tunnel exposes your local service to the entire internet, and the random URL is not a password — anyone who has it can reach your service, and there is no login in front of it.
+**你隧道出去的，就是公开的。** 快速隧道会把你本机的服务暴露到整个互联网，而那个随机地址**不是密码**——任何人拿到它就能访问你的服务，前面没有任何登录页。
 
-- Do not post the URL in group chats, forums, or anywhere public — while it is alive, treat it like a temporary password.
-- Do not tunnel sensitive things: admin panels, databases, file shares, remote-desktop-like endpoints, or any service that has no authentication of its own. If you need access control, build it into the service (or use a named tunnel with Cloudflare Access).
-- Keep your local service bound to `127.0.0.1` (the default). If it listens on `0.0.0.0`, it is already reachable from your LAN before this tool is involved.
-- Traffic is decrypted at Cloudflare's edge and re-encrypted to your machine. Do not send data you would not hand to a third party.
-- The address is disposable: press `Ctrl + C` when you are done. The next run issues a new URL and the old one stops working.
-- Do not use it for anything that violates Cloudflare's terms or local law.
+- 别把地址发到群里、论坛或任何公开地方——它有效期间等同于一个临时密码。
+- 不要拿它暴露敏感服务：管理后台、数据库、文件共享、类远程桌面、以及任何自身没有认证的服务。需要访问控制就做在服务里（或改用命名隧道 + Cloudflare Access）。
+- 本地服务尽量只监听 `127.0.0.1`（默认就是）。如果它监听在 `0.0.0.0` 上，那在本工具还没上场之前，同局域网的人就已经能访问了。
+- 流量在 Cloudflare 边缘节点会被解密，再加密送到你机器上。不要把不愿交给第三方的数据往里塞。
+- 地址是一次性的：用完按 `Ctrl + C`。下次运行会换新地址，旧地址随即失效。
+- 不要用它做违反 Cloudflare 条款或当地法律的事。
 
-**About the download mirrors.** On the first run the script downloads `cloudflared.exe`. Because GitHub is slow or blocked on some networks, it probes several GitHub mirrors (`gh-proxy.com` / `ghproxy.net` / `ghfast.top` / `github.moeyy.xyz`), downloads from the fastest one, and falls back to `winget`. Mirrors are third parties, so if you care about supply-chain risk, verify the file against Cloudflare's published checksums:
+**关于下载源。** 首次运行会下载 `cloudflared.exe`。因为部分网络访问 GitHub 慢或不通，脚本会先探测几个 GitHub 镜像（`gh-proxy.com` / `ghproxy.net` / `ghfast.top` / `github.moeyy.xyz`），取最快的下载，最后兜底 `winget`。镜像属于第三方，如果你在意供应链风险，可以对照 Cloudflare 官方公布的校验值验证文件：
 
 ```bat
 certutil -hashfile "%LOCALAPPDATA%\cf-tunnel\bin\cloudflared.exe" SHA256
 ```
 
-Or download `cloudflared` yourself from <https://github.com/cloudflare/cloudflared/releases> and put it on `PATH` — the script prefers an existing `cloudflared` and only downloads when it cannot find one.
+或者自己从 <https://github.com/cloudflare/cloudflared/releases> 下载放进 `PATH`——脚本优先用已有的 `cloudflared`，找不到才会下载。
 
-**Privileges.** No administrator rights are needed. The binary is installed to `%LOCALAPPDATA%\cf-tunnel\bin\`; nothing is added to `PATH`, the registry, or the system.
+**权限。** 不需要管理员权限。程序装在 `%LOCALAPPDATA%\cf-tunnel\bin\`，不改 `PATH`、不写注册表、不碰系统目录。
 
-## FAQ
+## 常见问题
 
-**The URL shows 502 / Bad Gateway**
-Your local service is not running, or the port is wrong. First confirm `http://localhost:<port>` works in a browser.
+**打开网址显示 502 / Bad Gateway**
+本地服务没起来或端口填错了。先确认浏览器访问 `http://localhost:端口` 正常。
 
-**`failed to dial to edge` / cannot reach Cloudflare edge**
-Your network is blocking port 7844. Retry with another protocol: `cf-tunnel-en.cmd 8080 -Protocol quic` (or `-Protocol http2`), and use a proxy if necessary.
+**提示 `failed to dial to edge` / 连不上边缘节点**
+网络出不去 7844 端口。换协议再试：`cf-tunnel-zh.cmd 8080 -Protocol quic`（或反过来用 `-Protocol http2`），必要时挂代理。
 
-**Is the URL temporary?**
-Yes. Quick Tunnels are free and temporary: **a new address is issued on every restart** and long-term availability is not guaranteed. They are a good fit for demos, integration testing, or reaching a local service from your phone.
-For a stable hostname, use a named tunnel instead (`cloudflared tunnel login` → `tunnel create` → `tunnel route dns`) — that is a different workflow.
+**地址是临时的？**
+是的。Quick Tunnel 属于免费临时隧道，**每次重启都会换一个新地址**，且不保证长期可用，适合临时演示、联调、手机访问本机服务。
+需要固定域名请改用命名隧道（`cloudflared tunnel login` → `tunnel create` → `tunnel route dns`），那是另一套流程。
 
-**I want a fixed address / access control**
-That requires a Cloudflare account and your own domain. This tool does not cover that scenario.
+**想固定地址 / 加访问控制**
+那就需要 Cloudflare 账号 + 自己的域名，本工具不覆盖这个场景。
 
-## Requirements
+## 环境要求
 
 - Windows 10 / 11
-- Windows PowerShell 5.1 or PowerShell 7 (the built-in 5.1 is enough)
-- Internet access; if your network blocks TCP 7844 or UDP, bring your own proxy
+- Windows PowerShell 5.1 或 PowerShell 7（系统自带 5.1 即可）
+- 能访问公网；网络环境出不去 7844（TCP）或 UDP 时需自备代理
 
-## Files
+## 文件
 
-Two builds, identical in behaviour — only the console language differs. Each build lives in its own folder and is self-contained, so you can copy a single folder anywhere and double-click the `.cmd` inside it:
+两个版本，行为完全一样，只有控制台语言不同。各自独立放一个文件夹，整个文件夹拷到哪都能用：
 
-| Build | Folder | Entry point | Logic |
+| 版本 | 文件夹 | 入口 | 逻辑 |
 | --- | --- | --- | --- |
-| English | `en/` | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
 | 中文 | `zh/` | `cf-tunnel-zh.cmd` | `cf-tunnel-zh.ps1` |
+| English | `en/` | `cf-tunnel-en.cmd` | `cf-tunnel-en.ps1` |
 
-The `.cmd` file is the double-click entry point (it forwards to PowerShell, so you never have to change the execution policy). Both `.ps1` files run on Windows PowerShell 5.1 and PowerShell 7.
+`.cmd` 是双击入口（转发给 PowerShell，所以不用改执行策略）。两个 `.ps1` 都兼容 Windows PowerShell 5.1 与 PowerShell 7。
 
-## License
+两个版本的代码完全一样，区别只在注释和提示语：中文版的注释也是中文，方便对着读；英文版注释是英文。
+
+## 许可
 
 MIT
